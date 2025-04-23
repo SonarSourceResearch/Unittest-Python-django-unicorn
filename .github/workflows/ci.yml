@@ -42,19 +42,12 @@ jobs:
           poetry install -E minify
 
       - name: Produce the .coverage file
-        run: poetry run coverage run -m pytest
+        run: |
+          poetry run coverage run -m pytest
+          poetry run coverage xml
 
-      - name: Coverage comment
-        id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@v3
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Store Pull Request comment to be posted
+      - name: Archive code coverage results
         uses: actions/upload-artifact@v4
-        if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
         with:
-          # If you use a different name, update COMMENT_ARTIFACT_NAME accordingly
-          name: python-coverage-comment-action
-          # If you use a different name, update COMMENT_FILENAME accordingly
-          path: python-coverage-comment-action.txt
+          name: code-coverage-report
+          path: coverage.xml
